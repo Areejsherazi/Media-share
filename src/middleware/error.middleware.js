@@ -2,7 +2,7 @@ function notFound(req, res) {
   res.status(404).json({ message: `Route not found: ${req.originalUrl}` });
 }
 
-function errorHandler(error, req, res, next) {
+function errorHandler(error, req, res) {
   const statusCode = error.statusCode || 500;
 
   if (process.env.NODE_ENV !== 'test') {

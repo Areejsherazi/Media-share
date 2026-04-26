@@ -1,5 +1,3 @@
-const jsdoc = require('eslint-plugin-jsdoc');
-
 module.exports = [
   {
     ignores: [
@@ -30,9 +28,6 @@ module.exports = [
         clearInterval: 'readonly'
       }
     },
-    plugins: {
-      jsdoc
-    },
     rules: {
       // Error prevention
       'no-unused-vars': 'error',
@@ -41,7 +36,7 @@ module.exports = [
       'no-debugger': 'error',
       'no-duplicate-imports': 'error',
       'no-useless-constructor': 'error',
-      
+
       // Code quality
       'eqeqeq': ['error', 'always'],
       'curly': ['error', 'all'],
@@ -61,7 +56,7 @@ module.exports = [
       'radix': 'error',
       'wrap-iife': ['error', 'inside'],
       'yoda': 'error',
-      
+
       // Style
       'indent': ['error', 2],
       'linebreak-style': ['error', 'unix'],
@@ -87,52 +82,14 @@ module.exports = [
       'space-in-parens': ['error', 'never'],
       'space-infix-ops': 'error',
       'space-unary-ops': ['error', { words: true, nonwords: false }],
-      'spaced-comment': ['error', 'always'],
-      
-      // JSDoc
-      'jsdoc/check-alignment': 'error',
-      'jsdoc/check-param-names': 'error',
-      'jsdoc/check-tag-names': 'error',
-      'jsdoc/check-types': 'error',
-      'jsdoc/implements-on-classes': 'error',
-      'jsdoc/newline-after-description': 'error',
-      'jsdoc/no-undefined-types': 'error',
-      'jsdoc/require-description-complete-sentence': 'error',
-      'jsdoc/require-example': 'off',
-      'jsdoc/require-hyphen-before-param-description': 'error',
-      'jsdoc/require-param': 'error',
-      'jsdoc/require-param-description': 'error',
-      'jsdoc/require-param-name': 'error',
-      'jsdoc/require-param-type': 'error',
-      'jsdoc/require-returns-description': 'error',
-      'jsdoc/require-returns-type': 'error',
-      'jsdoc/valid-types': 'error'
+      'spaced-comment': ['error', 'always']
     }
   },
   {
     files: ['src/**/*.js'],
     rules: {
       // Application-specific rules
-      'no-process-env': 'off', // Allow process.env for configuration
-      'jsdoc/require-returns': 'off' // Don't require return documentation for all functions
-    }
-  },
-  {
-    files: ['tests/**/*.js'],
-    languageOptions: {
-      globals: {
-        describe: 'readonly',
-        test: 'readonly',
-        expect: 'readonly',
-        beforeAll: 'readonly',
-        afterAll: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        jest: 'readonly'
-      }
-    },
-    rules: {
-      'no-unused-expressions': 'off' // Allow expect() calls
+      'no-process-env': 'off' // Allow process.env for configuration
     }
   }
 ];

@@ -14,11 +14,11 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' 
-          ? 'https://your-production-domain.com' 
+        url: process.env.NODE_ENV === 'production'
+          ? 'https://your-production-domain.com'
           : `http://localhost:${process.env.PORT || 5000}`,
-        description: process.env.NODE_ENV === 'production' 
-          ? 'Production server' 
+        description: process.env.NODE_ENV === 'production'
+          ? 'Production server'
           : 'Development server'
       }
     ],
