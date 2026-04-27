@@ -12,7 +12,7 @@ async function ensureConnection() {
   try {
     await redisClient.connect();
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -27,7 +27,7 @@ async function getCachedValue(key) {
   try {
     const payload = await redisClient.get(key);
     return payload ? JSON.parse(payload) : null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -41,7 +41,7 @@ async function setCachedValue(key, value, ttlSeconds = 120) {
 
   try {
     await redisClient.set(key, JSON.stringify(value), 'EX', ttlSeconds);
-  } catch (error) {
+  } catch {
     // Silent fail - continue without cache
   }
 }
@@ -59,7 +59,7 @@ async function clearByPattern(pattern) {
     if (keys.length) {
       await redisClient.del(keys);
     }
-  } catch (error) {
+  } catch {
     // Silent fail - continue without cache clearing
   }
 }
