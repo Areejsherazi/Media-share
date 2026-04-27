@@ -48,8 +48,10 @@ jobs:
           
           # Clone or update repository (using GitHub token for private repo)
           if [ ! -d ".git" ]; then
-            git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/Areejsherazi/Media-share.git .
+            git config --global credential.helper '!echo username=${{ secrets.GITHUB_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
+            git clone https://github.com/Areejsherazi/Media-share.git .
           else
+            git config --global credential.helper '!echo username=${{ secrets.GITHUB_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
             git pull origin main
           fi
           
