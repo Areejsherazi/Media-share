@@ -9,7 +9,8 @@ Backend for a photo-sharing application with JWT authentication, role-based acce
 - Paginated image feed
 - Comments and star ratings
 - Search by title or caption
-- Optional Redis caching for feeds and search
+- Redis caching for feeds and search
+- Docker Compose support for local development
 - Docker support for containerized deployment
 - Image optimization on upload with `sharp`
 
@@ -18,9 +19,14 @@ Backend for a photo-sharing application with JWT authentication, role-based acce
 - Node.js
 - Express
 - MongoDB Atlas with Mongoose
+- Redis (Caching)
 - Cloudinary
 - JWT
-- Redis (optional)
+- Swagger/OpenAPI
+- Jest (Testing)
+- GitHub Actions (CI/CD)
+- Docker Compose (Local Development)
+- Docker (Containerization)
 
 ## Project Structure
 
@@ -136,6 +142,26 @@ Authorization: Bearer <token>
 
 ## Docker
 
+### Docker Compose (Local Development)
+
+Start all services with Redis caching:
+
+```bash
+# Copy environment file
+cp .env.example .env
+
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Docker (Production)
+
 Build and run with:
 
 ```bash
@@ -146,5 +172,7 @@ docker run --env-file .env -p 5000:5000 photo-sharing-api
 ## Notes
 
 - This API is stateless and ready to sit behind a frontend or API gateway.
-- Redis caching is optional. If `REDIS_URL` is not provided, the API still works normally.
+- Redis caching improves performance for image lists and search results.
+- Docker Compose provides complete development environment with MongoDB and Redis.
 - Uploaded images are resized and compressed before being sent to Cloudinary.
+- Automated deployment to EC2 via GitHub Actions on main branch pushes.

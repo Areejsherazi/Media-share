@@ -3,6 +3,7 @@ const Image = require('../models/Image');
 const Comment = require('../models/Comment');
 const Rating = require('../models/Rating');
 const { uploadImage } = require('../services/image.service');
+const { getCachedValue, setCachedValue, clearByPattern } = require('../services/cache.service');
 const buildPagination = require('../utils/pagination');
 
 function normalizePeople(people) {
@@ -111,6 +112,9 @@ async function upload(req, res, next) {
       creatorId: req.user._id
     });
 
+    await clearByPattern('images:*');
+    await clearByPattern('search:*');
+
     return res.status(201).json({
       message: 'Image uploaded successfully',
       image
@@ -167,6 +171,13 @@ async function listImages(req, res, next) {
     const { creatorId } = req.query;
     const pagination = buildPagination(page, limit);
 
+    const cacheKey = `images:${pagination.page}:${pagination.limit}:${creatorId || 'all'}`;
+    const cachedPayload = await getCachedValue(cacheKey);
+
+    if (cachedPayload) {
+      return res.status(200).json(cachedPayload);
+    }
+
     const filter = {};
     if (creatorId) {
       if (!mongoose.isValidObjectId(creatorId)) {
@@ -192,6 +203,8 @@ async function listImages(req, res, next) {
       totalPages: Math.ceil(total / pagination.limit),
       data: images
     };
+
+    await setCachedValue(cacheKey, payload, 90);
 
     return res.status(200).json(payload);
   } catch (error) {
@@ -365,6 +378,9 @@ async function addComment(req, res, next) {
     image.commentCount += 1;
     await image.save();
 
+    await clearByPattern('images:*');
+    await clearByPattern('search:*');
+
     const populatedComment = await Comment.findById(comment._id).populate('userId', 'username');
 
     return res.status(201).json({
@@ -490,6 +506,9 @@ async function addRating(req, res, next) {
     image.ratingCount = stats[0]?.ratingCount || 0;
     await image.save();
 
+    await clearByPattern('images:*');
+    await clearByPattern('search:*');
+
     return res.status(200).json({
       message: 'Rating submitted successfully',
       averageRating: Number(image.averageRating.toFixed(1)),
@@ -540,6 +559,13 @@ async function searchImages(req, res, next) {
       return res.status(400).json({ message: 'Search query is required' });
     }
 
+    const cacheKey = `search:${searchQuery.toLowerCase()}`;
+    const cachedPayload = await getCachedValue(cacheKey);
+
+    if (cachedPayload) {
+      return res.status(200).json(cachedPayload);
+    }
+
     const images = await Image.find({
       $or: [
         { title: { $regex: searchQuery, $options: 'i' } },
@@ -555,6 +581,8 @@ async function searchImages(req, res, next) {
       count: images.length,
       data: images
     };
+
+    await setCachedValue(cacheKey, payload, 120);
 
     return res.status(200).json(payload);
   } catch (error) {

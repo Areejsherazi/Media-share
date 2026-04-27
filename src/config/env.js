@@ -24,5 +24,6 @@ module.exports = {
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET,
     folder: process.env.CLOUDINARY_FOLDER || 'photo-sharing'
-  }
+  },
+  redisUrl: process.env.REDIS_URL || ''
 };

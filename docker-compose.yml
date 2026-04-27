@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb+srv://syedairamzahrabukhari_db_user:CY6Id4V2XXA9r3M7@cluster0.n5vnnje.mongodb.net/
+      - JWT_SECRET=a28ed930779360b93862ea522ade5fd329733448692f5d1198d5fcaaccae57554b61aa9a6beaa0540318e85d2afdc778510671a217192fe157b6a4553e5c49ba
+      - JWT_EXPIRES_IN=7d
+      - CLOUDINARY_CLOUD_NAME=dkiofe6wt
+      - CLOUDINARY_API_KEY=327959998663874
+      - CLOUDINARY_API_SECRET=tMy26zMxARYFsc4haW9tKnwmZDc
+      - CLOUDINARY_FOLDER=photo-sharing
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+    networks:
+      - photo-sharing-network
+
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=photo-sharing
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - photo-sharing-network
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - photo-sharing-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  photo-sharing-network:
+    driver: bridge
