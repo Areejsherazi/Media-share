@@ -19,15 +19,27 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          # Update system packages
-          sudo apt update && sudo apt upgrade -y
-          
-          # Install Docker and Docker Compose
-          if ! command -v docker &> /dev/null; then
-            sudo apt install -y docker.io docker-compose
+          # Detect OS and install packages
+          if command -v apt &> /dev/null; then
+            # Ubuntu/Debian
+            sudo apt update && sudo apt upgrade -y
+            sudo apt install -y docker.io docker-compose git
             sudo usermod -aG docker $USER
             sudo systemctl enable docker
             sudo systemctl start docker
+          elif command -v yum &> /dev/null; then
+            # Amazon Linux/CentOS
+            sudo yum update -y
+            sudo yum install -y docker git
+            sudo systemctl enable docker
+            sudo systemctl start docker
+            sudo usermod -a -G docker $USER
+            # Install docker-compose
+            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+          else
+            echo "Unsupported OS"
+            exit 1
           fi
           
           # Create app directory if it doesn't exist
