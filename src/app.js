@@ -9,6 +9,7 @@ const swaggerUi = require('swagger-ui-express');
 const authRoutes = require('./routes/auth.routes');
 const imageRoutes = require('./routes/image.routes');
 const searchRoutes = require('./routes/search.routes');
+const notificationRoutes = require('./routes/notification.routes');
 const { notFound, errorHandler } = require('./middleware/error.middleware');
 const env = require('./config/env');
 const swaggerSpecs = require('./config/swagger');
@@ -16,7 +17,7 @@ const swaggerSpecs = require('./config/swagger');
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.corsOrigin.split(',').map((origin) => origin.trim()) }));
+app.use(cors({ origin: '*', credentials: true }));
 app.use(compression());
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -53,6 +54,7 @@ app.get('/api-docs.json', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

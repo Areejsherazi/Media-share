@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Image = require('../models/Image');
 const Comment = require('../models/Comment');
 const Rating = require('../models/Rating');
+const Notification = require('../models/Notification');
 const { uploadImage } = require('../services/image.service');
 const { getCachedValue, setCachedValue, clearByPattern } = require('../services/cache.service');
 const buildPagination = require('../utils/pagination');
@@ -381,6 +382,14 @@ async function addComment(req, res, next) {
     await clearByPattern('images:*');
     await clearByPattern('search:*');
 
+    // Create notification for image owner
+    await Notification.createCommentNotification(
+      image._id,
+      req.user._id,
+      image.creatorId,
+      req.body.text
+    );
+
     const populatedComment = await Comment.findById(comment._id).populate('userId', 'username');
 
     return res.status(201).json({
@@ -508,6 +517,15 @@ async function addRating(req, res, next) {
 
     await clearByPattern('images:*');
     await clearByPattern('search:*');
+
+    // Create notification for image owner (only on first rating)
+    if (rating.isNew) {
+      await Notification.createLikeNotification(
+        image._id,
+        req.user._id,
+        image.creatorId
+      );
+    }
 
     return res.status(200).json({
       message: 'Rating submitted successfully',
