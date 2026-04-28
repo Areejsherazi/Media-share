@@ -3,6 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches: [ test ]
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   deploy:
@@ -48,11 +49,11 @@ jobs:
           
           # Clone or update repository (using GitHub token for private repo)
           if [ ! -d ".git" ]; then
-            git config --global credential.helper '!echo username=${{ secrets.GITHUB_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
-            git clone https://github.com/Areejsherazi/Media-share.git .
+            echo "Cloning repository for first time..."
+            git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/Areejsherazi/Media-share.git .
           else
-            git config --global credential.helper '!echo username=${{ secrets.GITHUB_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
-            git pull origin main
+            echo "Repository exists, pulling latest changes..."
+            git pull origin test
           fi
           
           # Stop existing containers
