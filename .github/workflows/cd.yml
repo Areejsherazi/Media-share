@@ -18,6 +18,9 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        timeout: 300s
+        command_timeout: 600s
         script: |
           # Create app directory if it doesn't exist
           mkdir -p /home/${{ secrets.EC2_USERNAME }}/app
