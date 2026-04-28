@@ -19,39 +19,16 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          # Detect OS and install packages
-          if command -v apt &> /dev/null; then
-            # Ubuntu/Debian
-            sudo apt update && sudo apt upgrade -y
-            sudo apt install -y docker.io docker-compose git
-            sudo usermod -aG docker $USER
-            sudo systemctl enable docker
-            sudo systemctl start docker
-          elif command -v yum &> /dev/null; then
-            # Amazon Linux/CentOS
-            sudo yum update -y
-            sudo yum install -y docker git
-            sudo systemctl enable docker
-            sudo systemctl start docker
-            sudo usermod -a -G docker $USER
-            # Install docker-compose
-            sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            sudo chmod +x /usr/local/bin/docker-compose
-          else
-            echo "Unsupported OS"
-            exit 1
-          fi
-          
           # Create app directory if it doesn't exist
           mkdir -p /home/${{ secrets.EC2_USERNAME }}/app
           cd /home/${{ secrets.EC2_USERNAME }}/app
           
           # Clone or update repository (using GitHub token for private repo)
           if [ ! -d ".git" ]; then
-            git config --global credential.helper '!echo username=${{ secrets.GITHUB_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
+            git config --global credential.helper '!echo username=${{ secrets.GIT_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
             git clone https://github.com/Areejsherazi/Media-share.git .
           else
-            git config --global credential.helper '!echo username=${{ secrets.GITHUB_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
+            git config --global credential.helper '!echo username=${{ secrets.GIT_USERNAME }}; echo password=${{ secrets.GITHUB_TOKEN }}; echo'
             git pull origin main
           fi
           
