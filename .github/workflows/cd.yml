@@ -12,6 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Test SSH Connection
+      run: |
+        echo "Testing SSH connection to ${{ secrets.EC2_HOST }}"
+        echo "Username: ${{ secrets.EC2_USERNAME }}"
+        
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -19,9 +24,14 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
-        timeout: 300s
-        command_timeout: 600s
+        timeout: 120s
+        command_timeout: 300s
         script: |
+          echo "Successfully connected to EC2!"
+          whoami
+          pwd
+          ls -la
+          
           # Create app directory if it doesn't exist
           mkdir -p /home/${{ secrets.EC2_USERNAME }}/app
           cd /home/${{ secrets.EC2_USERNAME }}/app
