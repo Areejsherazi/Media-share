@@ -7,40 +7,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
 
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          # Create app directory if it doesn't exist
-          mkdir -p /home/${{ secrets.EC2_USERNAME }}/app
-          cd /home/${{ secrets.EC2_USERNAME }}/app
-          
-          # Clone or update repository (using GitHub token for private repo)
-          if [ ! -d ".git" ]; then
-            git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/Areejsherazi/Media-share.git .
-          else
-            git pull origin main
-          fi
-          
-          # Stop existing containers
-          docker-compose down || true
-          
-          # Build and start with Docker Compose
-          docker-compose up -d --build
-          
-          # Wait for services to be healthy
-          sleep 30
-          
-          # Check if services are running
-          docker-compose ps
-          
-          # Show logs for debugging
-          docker-compose logs app
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.EC2_USERNAME }}/app || mkdir -p /home/${{ secrets.EC2_USERNAME }}/app && cd /home/${{ secrets.EC2_USERNAME }}/app
+
+            # clone or pull
+            if [ ! -d ".git" ]; then
+              git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/Areejsherazi/Media-share.git .
+            else
+              git pull origin main
+            fi
+
+            # restart containers
+            docker-compose down || true
+            docker-compose up -d --build
+
+            # show status
+            docker-compose ps
